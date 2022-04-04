@@ -4,8 +4,17 @@ import java.util.Objects;
 import java.util.List;
 import java.util.ArrayList;
 
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import lombok.Data;
 
+@Entity
 @Data
 class Account {
 
@@ -14,12 +23,12 @@ class Account {
     ASSET
   }
 
-  private Long id;
+  private @Id @GeneratedValue Long id;
   private String name;
   private AccountType type;
-  private Customer customer;
-  private List<Transaction> creditTransactions = new ArrayList<Transaction>();
-  private List<Transaction> debitTransactions = new ArrayList<Transaction>();
+  private @ManyToOne @JoinColumn(name="customer_id") Customer customer;
+  private @OneToMany(mappedBy="creditAccount") List<Transaction> creditTransactions = new ArrayList<Transaction>();
+  private @OneToMany(mappedBy="debitAccount") List<Transaction> debitTransactions = new ArrayList<Transaction>();
 
   Account() {}
 

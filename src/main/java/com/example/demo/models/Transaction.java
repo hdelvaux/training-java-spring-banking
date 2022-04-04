@@ -3,15 +3,22 @@ package banking;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import lombok.Data;
 
+@Entity
 @Data
 class Transaction {
 
-  private Long id;
+  private @Id @GeneratedValue Long id;
   private LocalDateTime datetime = LocalDateTime.now();
-  private Account creditAccount;
-  private Account debitAccount;
+  private @ManyToOne @JoinColumn(name="credit_account_id") Account creditAccount;
+  private @ManyToOne @JoinColumn(name="debit_account_id") Account debitAccount;
   private Double amount;
 
   Transaction(){}

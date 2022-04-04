@@ -5,15 +5,23 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import lombok.Data;
 
+@Entity
 @Data
 class Customer {
 
-  private Long id;
+  private @Id @GeneratedValue Long id;
   private String name;
   private String surname;
-  private List<Account> accounts = new ArrayList<Account>();
+  private @OneToMany(mappedBy="customer") List<Account> accounts = new ArrayList<Account>();
 
   public Customer(){}
 
