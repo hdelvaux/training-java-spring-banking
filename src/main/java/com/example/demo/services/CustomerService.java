@@ -4,15 +4,19 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import banking.Account.AccountType;
+
 @Service
 public class CustomerService {
 
   private CustomerRepository repository;
   private AccountService accountService;
+  private TransactionService transactionService;
 
-  public CustomerService(CustomerRepository repository, AccountService accountService) {
+  public CustomerService(CustomerRepository repository, AccountService accountService, TransactionService transactionService) {
     this.repository = repository;
     this.accountService = accountService;
+    this.transactionService = transactionService;
   }
 
   // --------- CRUD methods ---------
@@ -31,5 +35,25 @@ public class CustomerService {
 
   public Customer getCustomer(Long id){
     return this.repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
+  }
+
+  // ------ Additional methods ------
+
+  public Customer newAccount(Long id, NewAccountAccountDto newAccountDto){
+
+    Account account = new Account();
+    account.setName(newAccountDto.getName());
+    account.setType(AccountType.ASSET);
+
+    Customer customer = this.getCustomer(id);
+    customer.addAccount(account);
+    account.setCustomer(customer);
+    this.accountService.addAccount(account);
+
+    if(newAccountDto.getInitialCredit() != null && newAccountDto.getInitialCredit() != 0.0){
+        Transaction transaction = new Transaction(customer.getAccountsType(AccountType.EQUITY).get(0), account, newAccountDto.getInitialCredit());
+        this.transactionService.addTransaction(transaction);
+    }
+    return repository.save(customer);
   }
 }
