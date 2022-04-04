@@ -8,15 +8,21 @@ import org.springframework.stereotype.Service;
 public class CustomerService {
 
   private CustomerRepository repository;
+  private AccountService accountService;
 
-  public CustomerService(CustomerRepository repository) {
+  public CustomerService(CustomerRepository repository, AccountService accountService) {
     this.repository = repository;
+    this.accountService = accountService;
   }
 
   // --------- CRUD methods ---------
 
   public Customer addCustomer(Customer customer){
-    return this.repository.save(customer);
+    Account openingAccount = new Account(customer, "Equity", Account.AccountType.EQUITY);
+    customer.addAccount(openingAccount);
+    Customer savedCustomer = this.repository.save(customer);
+    this.accountService.addAccount(openingAccount);
+    return savedCustomer;
   }
 
   public List<Customer> getCustomers(){
