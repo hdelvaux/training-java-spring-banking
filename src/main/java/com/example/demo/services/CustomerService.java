@@ -24,6 +24,6 @@ public class CustomerService {
   }
 
   public Customer getCustomer(Long id){
-    return this.repository.findById(id).get();
+    return this.repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
   }
 }

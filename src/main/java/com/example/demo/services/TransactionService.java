@@ -24,7 +24,7 @@ public class TransactionService {
   }
 
   public Transaction getTransaction(Long id){
-    return this.repository.findById(id).get();
+    return this.repository.findById(id).orElseThrow(() -> new TransactionNotFoundException(id));
   }
 
 }

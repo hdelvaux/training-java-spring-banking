@@ -24,7 +24,7 @@ public class AccountService {
   }
 
   public Account getAccount(Long id){
-    return this.repository.findById(id).get();
+    return this.repository.findById(id).orElseThrow(() -> new AccountNotFoundException(id));
   }
 
 }
