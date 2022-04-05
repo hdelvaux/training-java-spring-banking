@@ -39,20 +39,31 @@ public class CustomerService {
 
   // ------ Additional methods ------
 
+  private void initialTransaction(Customer customer, Account dstAccount, Double amount){
+    List<Account> equityAccounts = customer.getAccountsType(AccountType.EQUITY);
+    Account srcAccount = null;
+    if (equityAccounts.size() == 0){
+      srcAccount = new Account(customer, "DefaultEquity", Account.AccountType.EQUITY);;
+      this.accountService.addAccount(srcAccount);
+    } else {
+      srcAccount = equityAccounts.get(0);
+    }
+    Transaction transaction = new Transaction(srcAccount, dstAccount, amount);
+    this.transactionService.addTransaction(transaction);
+  }
+
   public Customer newAccount(Long id, NewAccountAccountDto newAccountDto){
 
-    Account account = new Account();
-    account.setName(newAccountDto.getName());
-    account.setType(AccountType.ASSET);
+    Account dstAccount = new Account();
+    dstAccount.setName(newAccountDto.getName());
+    dstAccount.setType(AccountType.ASSET);
 
     Customer customer = this.getCustomer(id);
-    customer.addAccount(account);
-    account.setCustomer(customer);
-    this.accountService.addAccount(account);
+    dstAccount.setCustomer(customer);
+    this.accountService.addAccount(dstAccount);
 
     if(newAccountDto.getInitialCredit() != null && newAccountDto.getInitialCredit() != 0.0){
-        Transaction transaction = new Transaction(customer.getAccountsType(AccountType.EQUITY).get(0), account, newAccountDto.getInitialCredit());
-        this.transactionService.addTransaction(transaction);
+        initialTransaction(customer, dstAccount, newAccountDto.getInitialCredit());
     }
     return repository.save(customer);
   }
