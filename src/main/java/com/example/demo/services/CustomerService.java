@@ -52,5 +52,20 @@ public class CustomerService {
     this.transactionService.addTransaction(transaction);
   }
 
+  public Customer newAccount(Long id, NewAccountAccountDto newAccountDto){
+
+    Account dstAccount = new Account();
+    dstAccount.setName(newAccountDto.getName());
+    dstAccount.setType(AccountType.ASSET);
+
+    Customer customer = this.getCustomer(id);
+    dstAccount.setCustomer(customer);
+    this.accountService.addAccount(dstAccount);
+
+    if(newAccountDto.getInitialCredit() != null && newAccountDto.getInitialCredit() != 0.0){
+        initialTransaction(customer, dstAccount, newAccountDto.getInitialCredit());
+    }
+    return repository.save(customer);
+  }
 
 }
