@@ -30,6 +30,9 @@ public class CustomerService {
   }
 
   public Customer getCustomer(Long id){
+    if (id == null){
+      throw new CustomerNotFoundException((long)0);
+    }
     return this.repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
   }
 }
