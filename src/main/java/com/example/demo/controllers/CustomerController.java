@@ -21,6 +21,7 @@ class CustomerController {
   CustomerInfoCustomerDto customerInfo(@PathVariable Long id){
     Customer customer = this.service.getCustomer(id);
     return CustomerInfoCustomerDto.from(customer);
+  }
 
   @PostMapping("/customers/{id}/account/create")
   CustomerDto newAccount(@PathVariable Long id, @RequestBody NewAccountAccountDto newAccountDto){
