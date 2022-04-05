@@ -3,6 +3,7 @@ package banking;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
 
 import banking.Account.AccountType;
 
@@ -13,7 +14,7 @@ public class AccountService {
   private CustomerService customerService;
   private TransactionService transactionService;
 
-  public AccountService(AccountRepository repository, CustomerService customerService, TransactionService transactionService) {
+  public AccountService(AccountRepository repository, @Lazy CustomerService customerService, TransactionService transactionService) {
     this.repository = repository;
     this.customerService = customerService;
     this.transactionService = transactionService;
@@ -36,20 +37,19 @@ public class AccountService {
   // -------- Additional methods --------------
 
   public Account newAccount(NewAccountAccountDto newAccountDto){
-    Account account = new Account();
-    account.setName(newAccountDto.getName());
-    account.setType(AccountType.ASSET);
+
+    Account dstAccount = new Account();
+    dstAccount.setName(newAccountDto.getName());
+    dstAccount.setType(AccountType.ASSET);
 
     Customer customer = this.customerService.getCustomer(newAccountDto.getCustomerId());
-    customer.addAccount(account);
-    account.setCustomer(customer);
-    this.addAccount(account);
-    this.customerService.addCustomer(customer);
+    dstAccount.setCustomer(customer);
+    this.addAccount(dstAccount);
 
     if(newAccountDto.getInitialCredit() != null && newAccountDto.getInitialCredit() != 0.0){
-        Transaction transaction = new Transaction(customer.getAccountsType(AccountType.EQUITY).get(0), account, newAccountDto.getInitialCredit());
-        this.transactionService.addTransaction(transaction);
+        this.customerService.initialTransaction(customer, dstAccount, newAccountDto.getInitialCredit());
     }
-    return account;
+    return dstAccount;
   }
+
 }
